@@ -1,5 +1,9 @@
 # yubikeyでのSSH認証
 
+## 環境
+
+* windows 10
+
 ## 参考
 
 [秘密鍵、管理してますか? YubiKeyで鍵の一元管理とSSH接続、２段階認証の高速化を試す \- Qiita](https://qiita.com/dseg/items/77d77467970b1b510285#%E6%9C%80%E5%BE%8C%E3%81%AB-pin%E3%81%AE%E8%A8%AD%E5%AE%9A)
