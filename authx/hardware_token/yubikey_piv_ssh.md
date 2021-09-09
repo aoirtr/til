@@ -20,27 +20,60 @@
 
 ## コマンド
 
+### 9aスロットに証明書を発行
+
 ```powershell
-> yubico-piv-tool -a status
+yubico-piv-tool -a status
 #=> Version:        5.1.2
 #=> Serial Number:  XXXXXXXXX
 #=> CHUID:  No data available
 #=> CCC:    No data available
 #=> PIN tries left: 3
 
-> yubico-piv-tool -s 9a -a generate -o public.pem -A ECCP384
+yubico-piv-tool -s 9a -a generate -o public.pem -A ECCP384
 #=> Successfully generated a new private key.
 
-> yubico-piv-tool -a verify-pin -P 123456 -a selfsign-certificate -s 9a -S "/CN=SSH key/" -i public.pem -o cert.pem
+yubico-piv-tool -a verify-pin -P 123456 -a selfsign-certificate -s 9a -S "/CN=SSH key/" -i public.pem -o cert.pem
 #=> Successfully verified PIN.
 #=> Successfully generated a new self signed certificate.
 
-> yubico-piv-tool -a import-certificate -s 9a -i cert.pem
+yubico-piv-tool -a import-certificate -s 9a -i cert.pem
 #=> Successfully imported a new certificate.
 
-> cd "C:\Program Files\OpenSC Project\OpenSC\tools"
+cd "C:\Program Files\OpenSC Project\OpenSC\tools"
 
-> .\pkcs15-tool.exe --read-ssh-key 1
+.\pkcs15-tool.exe --read-ssh-key 1
 #=> Using reader with a card: Yubico YubiKey OTP+FIDO+CCID 0
 #=> ecdsa-sha2-nistp384 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX== PIV AUTH pubkey
+```
+
+### GPG設定
+
+* GPG忘れてるし100％理解してない
+
+```powershell
+gpg --card-status
+
+gpg --card-edit
+gpg/card> admin
+gpg/card> generate
+
+$SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
+
+gpg-connect-agent /bye
+ssh-add -L
+
+gpg-connect-agent killagent /bye
+gpg-connect-agent /bye
+
+ssh-add -L
+
+gpg --card-status
+# ...
+# General key info..: pub  rsa2048/XXXXXXXXXX YYYY-MM-DD name <mail@example.com>
+# ...
+
+gpg --export-ssh-key XXXXXXXXXX > ssh_auth_key.pub
+
+cat .\ssh_auth_key.pub
 ```
